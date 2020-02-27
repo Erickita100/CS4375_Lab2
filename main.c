@@ -15,7 +15,7 @@ int main(){
 	 do {
 	    printPrompt();
 		input =read_input();
-		printf( " here%s\n", input[0]);
+		//printf( " here%s", input[0]);
 		chooseCommand(input);
 	  } while (exited);
 	
@@ -69,17 +69,20 @@ char** read_input(){
 	char buf[100];
 	//char *str = malloc (sizeof (char) * strlen(buf)); 
     	fgets(buf, 100, stdin); 
+	//char *newline = strchr( buf, '\n' );
+	//	if ( newline )
+ 	//	 *newline = 0;
 	//char string[100] = buf;
-	char *token = (char *)malloc(((sizeof(char)) * strlen(buf)) +1);
+	char *token = (char *)malloc(((sizeof(char)) * strlen(buf))+1);
    // Extract the first token
-  	 token = strtok(buf, " ");
+  	 token = strtok(buf, " \n\r\t");
    // loop through the string to extract all other tokens
 	char ** args = (char **)malloc((sizeof(char *))*(strlen(token)+1));
 	int count =0;
    while( token != NULL ) {
 	args[count]=token;
 	count++;
-      //printf( " %s\n", token ); //printing each token
+      //printf( " %s", token ); //printing each token
       token = strtok(NULL, " ");
    }
 	args[count]=0;
@@ -92,7 +95,7 @@ char** read_input(){
 
 void chooseCommand(char** args){
 	char *commands[] = {"cd","exit"};
-	//printf("here2 %s\n",args[1]);
+	//printf("here2%shello",args[0]);
 		if (strcmp(args[0], commands[0]) == 0){
 			printf("%s\n","cd path");
 		} 
