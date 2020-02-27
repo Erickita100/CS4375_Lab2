@@ -15,7 +15,7 @@ int main(){
 	 do {
 	    printPrompt();
 		input =read_input();
-		printf( " here%s\n", input[0]);
+		printf( " here %s\n", input[0]);
 		chooseCommand(input);
 	  } while (exited);
 	
@@ -46,7 +46,6 @@ int main(){
         // parent goes down this path (original process)
         int wc = wait(NULL);
 	printPrompt();
-
     }
 */
 }
@@ -55,14 +54,18 @@ void printPrompt(){
 
 	//int ps= setenv("PS1","xxx",0);
 	//printf("%s\n", ps);
-	char *ps1 =getenv("PS1");
+	//char *ps1 =getenv("PS1");
 	//printf("%s\n", ps1);
 	//echo ${PS1@P}   ;
-	if(ps1 != NULL){
-		printf("%s", ps1);
-	}else{
-		printf("%s", "$ ");
-	}
+	//if(ps1 != NULL){
+	//	printf("%s", ps1);
+	//}else{
+	//	printf("%s", "$ ");
+	//}
+	char s[100]; 
+  
+    // printing current working directory 
+    	printf("%s $ ", getcwd(s, 100)); 
 }
 char** read_input(){
 
@@ -91,7 +94,7 @@ char** read_input(){
 }
 
 void chooseCommand(char** args){
-	char *commands[] = {"cd","exit"};
+	char *commands[] = {"cd\n","exit\n"};
 	//printf("here2 %s\n",args[1]);
 		if (strcmp(args[0], commands[0]) == 0){
 			printf("%s\n","cd path");
@@ -99,12 +102,11 @@ void chooseCommand(char** args){
 		else if (strcmp(args[0], commands[1]) == 0){
 
 			printf("%s\n","exit path");
+			exit(0);	
 		}
 		else {
-				printf("%s\n","other command");
+				printf("%s\n","command not found");
 	
 		}
 }
-
-
 
