@@ -14,6 +14,9 @@ int process(char**args);
 int exit_program();
 int cd(char** args);
 
+char* input_file;
+char* output_file;
+
 int main(){
 
 	char** input;
@@ -22,16 +25,13 @@ int main(){
 	 do {
 	    	printPrompt();
 		input =read_input();
-		//printf( " loop %d", exited);
+		
 		exited = chooseCommand(input);
-		//process(input);
-		//printf( " loop %d", input[0]);
 		free(input);
 	  } while (exited);
 }
 
 int process(char** args){
- 	//printf("command %s", args[0]);
     	int rc = fork();
     	if (rc < 0) {
 		// fork failed; exit
@@ -39,21 +39,33 @@ int process(char** args){
 		exit(1);
     	} 
 	else if (rc == 0) {// child process
-		//chooseCommand(input);
-		//system(args[0]);
-		/*
-		if(strcmp(args[1], ">") && args[2] != NULL){
-			int fd0 = open(args[2], O_RDONLY);
-        		dup2(fd0, STDIN_FILENO);
-        		close(fd0);
-			/*
-			close(STDOUT_FILENO); 
-			open(args[2], O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU);
-			args[1]=NULL;
-			args[2]=NULL;
-*/
-		//}
-		//printf("OOOOOO%s", args[0] );
+	
+	 // open stdin
+            if (input_file != NULL) {
+                int fd = open(input_file, O_RDONLY);
+
+                if (dup2(fd, STDIN_FILENO) == -1) {
+                    fprintf(stderr, "dup2 failed");
+                }
+
+                close(fd);
+            }
+
+            // open stdout
+            if (output_file != NULL) {
+                int fd2;
+
+                if ((fd2 = open(output_file, O_WRONLY | O_CREAT, 0644)) < 0) {
+                    perror("couldn't open output file.");
+                    exit(0);
+                }
+
+               
+                printf("okay");
+                dup2(fd2, STDOUT_FILENO);
+                close(fd2);
+            }
+		
 		if (execvp(args[0], args) == -1) {
 	         
      		 perror("bash");
@@ -67,13 +79,10 @@ return 1;
     
 }
 int exit_program(){
-	//printf("%d", exited );
-	//exited =0;
-	//printf("%d", exited );
   return 0;
 }
 int cd(char **args)
-{	//printf("LLLLLL%s$LLLL ",args[1]);
+{
 	
   	if (args[1] == NULL) {
 		//char* s = getenv("PATH");
@@ -83,7 +92,6 @@ int cd(char **args)
 	    	if (chdir(args[1]) != 0) {
 	      	perror("bash:");
 	    	}
-		//system("ls");
   	}
   return 1;
 }
@@ -101,62 +109,65 @@ char** read_input(){
     	fgets(buf, 100, stdin); 
 	char* bf = buf;
 	char** args=((tokenize(bf)));
-  	//print_tokens(tokens);	   
-  	//free_tokens(tokens);
 
-/*
-	char *token = (char *)malloc(((sizeof(char)) * strlen(buf))+1);
-   	// Extract the first token
-  	 token = strtok(buf, " \n\t\r);
-   	// loop through the string to extract all other tokens
-	char ** args = (char **)malloc((sizeof(char *))*(strlen(token)+1));
-	int count =0;
-   	while( token != NULL ) {
-		args[count]=token;
-		count++;
-	      //printf( " %s", token ); //printing each token
-      		token = strtok(NULL, " ");
-   	}
-	args[count]=0;
-*/
-	return args;
+	char* current;
+	char** copy = malloc(strlen(bf) * sizeof(char *));
+    // assume no redirections
+        output_file = NULL;
+        input_file = NULL;
+
+        // split off the redirections
+        int j = 0;
+        int i = 0;
+        while (1) {
+            current = args[i++];
+            if (current == NULL)
+                break;
+	 	switch (*current) {
+		    case '<':
+		        if (current[1] == 0)
+		            current = args[i++];
+		        else
+		            ++current;
+		        input_file = current;
+		       
+		        break;
+
+		    case '>':
+		        if (current[1] == 0)
+		            current = args[i++];
+		        else
+		            ++current;
+		        output_file = current;
+		    
+		        break;
+		
+		    default:
+		        copy[j++] = current;
+		        break;
+		    }
+        }
+        copy[j] = NULL;
+
+	return copy;
 
 }
 
 int chooseCommand(char** args){
-	//printf("first%s\n",args[0]);
 	char *commands[] = {"cd","exit"};
 	if (strcmp(args[0], commands[0]) == 0){
-		//printf("second%s\n",args[0]);
-		//process(args);
 		return cd(args);
-		//return 1;
+		
 		
 	} 
 	else if (strcmp(args[0], commands[1]) == 0){
-		//printf("%s\n","exit path");
-		return 0;
-		//return ;
+		return exit_program();
 	}
-	else{/*
-		//printf("LLLLL%s",args[0]);
-		if( args[1] != NULL && strcmp(args[1], ">")){
-			if(args[2] == NULL){
-				printf("bash: expected argument to \"ls >\"\n");
-			}
-			args[1]=NULL;
-			args[2]=NULL;
-			//return process(args);
-		}
-		//printf("%s\n",args[0]);
-		//process(args);
-		//return 3;
-*/
-	
+	else{
+
 		return process(args);
 		
 	}
-	//process(args);
 	return 0;
 }
 
