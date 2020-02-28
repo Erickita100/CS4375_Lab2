@@ -49,6 +49,8 @@ int process(char** args){
 		
 		if (execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
+			int exitValue = WEXITSTATUS(system(args[0]));
+			printf("EXIT VALUE: %d\n",exitValue);
 			//int error = EXIT_FAILURE;
 			//printf("%s",error);
     		}
@@ -175,4 +177,3 @@ void background(char** args) {
     	args[num_of_words-1] = NULL;
 }
 }
-
