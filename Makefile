@@ -1,4 +1,4 @@
-run: main.c tokenizer.c
-	gcc main.c  tokenizer.c -o run
+run: main.c tokenizer.c bash.c
+	gcc main.c  tokenizer.c bash.c -o run
 clean:
 	rm run
