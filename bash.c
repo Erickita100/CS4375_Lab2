@@ -49,15 +49,22 @@ int process(char** args){
 		
 		if (execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
+			int error = EXIT_FAILURE;
+			printf("%s",error);
     		}
     	} else {
+		int status;
 		// parent goes down this path (original process)
 		if(!bg ) {
 			waitpid(rc, NULL, 0);
         		//wait(NULL);
 		    }
-		    bg= 0;
+		 bg= 0;
 		 wait(NULL);
+		if ( WIFEXITED(status) ) { 
+        	int exit_status = WEXITSTATUS(status);         
+        	printf("Program terminated with exit code %d\n",  exit_status); 
+		} 
 		
 	}
 return 1;
@@ -90,14 +97,20 @@ void printPrompt(){
 	}
 }
 char** read_input(){
+	char** copy;
 	char buf[100];
     	fgets(buf, 100, stdin); 
 	char* bf = buf;
+
+	if(strlen(buf)==1 && buf[0]==10){
+	return copy;
+}
+	//char* bf = buf;
 	num_of_words = count_words(bf);
 	char** args=((tokenize(bf)));
 
 	char* current;
-	char** copy = malloc(strlen(bf) * sizeof(char *));
+	copy = malloc(strlen(bf) * sizeof(char *));
     // assume no redirections
         output_file = NULL;
         input_file = NULL;
