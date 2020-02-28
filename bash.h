@@ -36,6 +36,9 @@ changes directory if a path is sent
 **/
 int cd(char** args);
 
+
+void check_for_pipe(char** args);
+void seperateCommands(char ** args, int pointer);
 /** checks the string for an '&' symbol
 and activates the bg boolean
 **/

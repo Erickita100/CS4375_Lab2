@@ -9,15 +9,22 @@
 
 char* input_file;
 char* output_file;
+char** pipe1;
+char** pipe2;
+char is_pipe;
 int num_of_words;
 char bg;
 
 int process(char** args){
 	//checks if the argument has a '&'
 	background(args);
-	
+	int my_pipe[2];
+	if(pipe1!=NULL){
+		//int my_pipe[2];
+		pipe(my_pipe);	
+	}
     	int rc = fork();
-	
+	int status;
     	if (rc < 0) {
 		// fork failed; exit
 		fprintf(stderr, "fork failed\n");
@@ -47,24 +54,40 @@ int process(char** args){
 		        dup2(fd2, STDOUT_FILENO);
 		        close(fd2);
 		    }	
-		    
-		//executes given command
-		if (execvp(args[0], args) == -1) {
+		if(pipe1!=NULL){
+			printf("hello");
+			close(my_pipe[0]);   /*Closes read side of pipe*/
+			close(1);       //STDOUT closed
+			dup2(my_pipe[1],1);
+					//args[0] = pipe1[0];
+					//printf("%s\n", pipe1[0]);
+			execvp(pipe1[0], pipe1);
+					
+		}
+			printf("LLLL");
+				//executes given command
+		if(execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
 			int exitValue = WEXITSTATUS(system(args[0]));
-			printf("EXIT VALUE: %d\n",exitValue);
-			//int error = EXIT_FAILURE;
-			//printf("%s",error);
-    		}
+			printf("Program terminated with exit code: %d\n",exitValue);
+			}
+			
+		
+
     	} else {
-		int status;
+		if(pipe2!=NULL){
+			wait(&rc);        //waits till the child send output to pipe
+       			close(my_pipe[1]);
+        		close(0);       //stdin closed
+        		dup2(my_pipe[0],0);
+        		execvp(pipe2[0],pipe2);
+		}
+		
 		// parent process
 		if(!bg ) {
 			waitpid(rc, &status, 0);
-        		//wait(NULL);
 		    }
 		 bg= 0;
-		 //wait(NULL);
 		
 		
 	}
@@ -120,7 +143,6 @@ char** read_input(){
 
         output_file = NULL;
         input_file = NULL;
-	//pipe_sym=NULL;
 
         // checks for redirections and creates a new argument
         int j = 0;
@@ -132,23 +154,33 @@ char** read_input(){
 		}
 	 	switch (*current) {
 		    case '<':
-		        if (current[1] == 0)
-		            current = args[i++];
-		        else
-		            ++current;
+		        if (current[1] == 0){
+		            current = args[i++];}
+		        else{
+		            ++current;}
 		        input_file = current;
 		       
 		        break;
 
 		    case '>':
-		        if (current[1] == 0)
-		            current = args[i++];
-		        else
-		            ++current;
+		        if (current[1] == 0){
+		            current = args[i++];}
+		        else{
+		            	++current;}
 		        output_file = current;
 		    
 		        break;
-		
+		    /*case '|':
+			if (current[1]==0){
+			    current = args[i++];
+			}else{
+				++current;}
+			pipe_arg = current;
+			printf("here");
+			//copy[j] = NULL;
+			
+			//return copy;
+			break;*/
 		    default:
 		        copy[j++] = current;
 		        break;
@@ -160,6 +192,37 @@ char** read_input(){
 
 }
 
+void check_for_pipe(char** args){
+
+	int  counter =0;
+  	char** p = args;
+  	for(;*p!=NULL;p++){
+		if(strcmp(*p,"|")==0){
+		is_pipe ='1';
+    		//printf("| found");
+		seperateCommands(args,counter);
+		}
+	is_pipe ='0';
+     	counter++;
+  }
+	
+}
+void seperateCommands(char ** args, int pointer){
+	//char** tokens = (char **)malloc((sizeof(char *))*(count_words(str)+1));
+	pipe1 = (char **)malloc((sizeof(char *))*(pointer+1));
+	pipe2 = (char **)malloc((sizeof(char *))*(num_of_words-pointer+1));
+	for(int i =0; i <pointer;i++){
+		pipe1[i] = copy_word(args[i]);
+		
+		//printf("pointer = %d %s\n",pointer, pipe1[i]);
+	}
+	int count =0;
+	for(int i =pointer+1; i <num_of_words;i++){
+		pipe2 [count]= copy_word(args[i]);
+		//printf("@pointer = %d %s\n",pointer, pipe2[count]);
+		count++;
+	}
+}
 int chooseCommand(char** args){
 	//built in commands
 	char *commands[] = {"cd","exit"};

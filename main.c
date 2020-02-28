@@ -5,12 +5,6 @@
 
 static char exited;
 
-
-char* input_file;
-char* output_file;
-int num_of_words;
-char bg;
-
 int main(){
 
 	char** input;
@@ -20,6 +14,7 @@ int main(){
 	    	printPrompt();
 		input =read_input();
 		if(input!=NULL){
+		check_for_pipe(input);
 		exited = chooseCommand(input);
 		}
 		free(input);
