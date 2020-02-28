@@ -69,8 +69,7 @@ int process(char** args){
 		    
 		
 		if (execvp(args[0], args) == -1) {
-	         
-     		 perror("bash");
+			printf("%s: Command not Found\n", args[0]);
     		}
     	} else {
 		// parent goes down this path (original process)
@@ -97,7 +96,7 @@ int cd(char **args)
     		printf("bash: expected argument to \"cd\"\n");
   	} else {
 	    	if (chdir(args[1]) != 0) {
-	      	perror("bash:");
+	      	perror("bash");
 	    	}
   	}
   return 1;
