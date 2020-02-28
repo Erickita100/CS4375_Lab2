@@ -13,9 +13,12 @@ int  chooseCommand(char** args);
 int process(char**args);
 int exit_program();
 int cd(char** args);
+void background(char** args);
 
 char* input_file;
 char* output_file;
+int num_of_words;
+char bg;
 
 int main(){
 
@@ -25,13 +28,14 @@ int main(){
 	 do {
 	    	printPrompt();
 		input =read_input();
-		
 		exited = chooseCommand(input);
 		free(input);
 	  } while (exited);
 }
 
 int process(char** args){
+	background(args);
+	
     	int rc = fork();
     	if (rc < 0) {
 		// fork failed; exit
@@ -40,31 +44,29 @@ int process(char** args){
     	} 
 	else if (rc == 0) {// child process
 	
-	 // open stdin
-            if (input_file != NULL) {
-                int fd = open(input_file, O_RDONLY);
+		 // open stdin
+		 if (input_file != NULL) {
+		        int fd = open(input_file, O_RDONLY);
 
-                if (dup2(fd, STDIN_FILENO) == -1) {
-                    fprintf(stderr, "dup2 failed");
-                }
+		        if (dup2(fd, STDIN_FILENO) == -1) {
+		            fprintf(stderr, "dup2 failed");
+		        }
 
-                close(fd);
-            }
+		        close(fd);
+		 }
 
-            // open stdout
-            if (output_file != NULL) {
-                int fd2;
+		 // open stdout
+		 if (output_file != NULL) {
+		        int fd2;
 
-                if ((fd2 = open(output_file, O_WRONLY | O_CREAT, 0644)) < 0) {
-                    perror("couldn't open output file.");
-                    exit(0);
-                }
-
-               
-                printf("okay");
-                dup2(fd2, STDOUT_FILENO);
-                close(fd2);
-            }
+		        if ((fd2 = open(output_file, O_WRONLY | O_CREAT, 0644)) < 0) {
+		            perror("couldn't open output file.");
+		            exit(0);
+		      	}
+		        dup2(fd2, STDOUT_FILENO);
+		        close(fd2);
+		    }	
+		    
 		
 		if (execvp(args[0], args) == -1) {
 	         
@@ -72,6 +74,11 @@ int process(char** args){
     		}
     	} else {
 		// parent goes down this path (original process)
+		if(!bg ) {
+			waitpid(rc, NULL, 0);
+        		//wait(NULL);
+		    }
+		    bg= 0;
 		 wait(NULL);
 		
 	}
@@ -108,6 +115,7 @@ char** read_input(){
 	char buf[100];
     	fgets(buf, 100, stdin); 
 	char* bf = buf;
+	num_of_words = count_words(bf);
 	char** args=((tokenize(bf)));
 
 	char* current;
@@ -115,6 +123,7 @@ char** read_input(){
     // assume no redirections
         output_file = NULL;
         input_file = NULL;
+	//pipe_sym=NULL;
 
         // split off the redirections
         int j = 0;
@@ -169,6 +178,14 @@ int chooseCommand(char** args){
 		
 	}
 	return 0;
+}
+
+void background(char** args) {
+	if(strcmp(args[num_of_words-1], "&") == 0) {
+   	 bg = 1;
+	//printf("background");
+    	args[num_of_words-1] = NULL;
+}
 }
 
 
