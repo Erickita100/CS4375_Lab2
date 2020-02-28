@@ -49,8 +49,8 @@ int process(char** args){
 		
 		if (execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
-			int error = EXIT_FAILURE;
-			printf("%s",error);
+			//int error = EXIT_FAILURE;
+			//printf("%s",error);
     		}
     	} else {
 		int status;
@@ -61,10 +61,7 @@ int process(char** args){
 		    }
 		 bg= 0;
 		 wait(NULL);
-		if ( WIFEXITED(status) ) { 
-        	int exit_status = WEXITSTATUS(status);         
-        	printf("Program terminated with exit code %d\n",  exit_status); 
-		} 
+		
 		
 	}
 return 1;
