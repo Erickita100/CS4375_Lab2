@@ -21,9 +21,8 @@ int main(){
 		input =read_input();
 		if(input!=NULL){
 		exited = chooseCommand(input);
-		
-		free(input);
 		}
+		free(input);
 	  } while (exited);
 return 1;
 }
