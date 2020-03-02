@@ -13,10 +13,11 @@ int main(){
 	 do {
 	    	printPrompt();
 		input =read_input();
-		if(input!=NULL){
+		/*if(input!=NULL){
 		check_for_pipe(input);
 		exited = chooseCommand(input);
-		}
+		}*/
+		exited = chooseCommand(input);
 		free(input);
 	  } while (exited);
 return 1;

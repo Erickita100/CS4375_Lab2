@@ -17,12 +17,12 @@ char bg;
 
 int process(char** args){
 	//checks if the argument has a '&'
-	background(args);
-	int my_pipe[2];
+	//background(args);
+	/*int my_pipe[2];
 	if(pipe1!=NULL){
 		//int my_pipe[2];
 		pipe(my_pipe);	
-	}
+	}*/
     	int rc = fork();
 	int status;
     	if (rc < 0) {
@@ -44,7 +44,7 @@ int process(char** args){
 		 }
 		
 		 // redirection of output
-		 if (output_file != NULL) {
+		if (output_file != NULL) {
 		        int fd2;
 
 		        if ((fd2 = open(output_file, O_WRONLY | O_CREAT, 0644)) < 0) {
@@ -54,17 +54,17 @@ int process(char** args){
 		        dup2(fd2, STDOUT_FILENO);
 		        close(fd2);
 		    }	
-		if(pipe1!=NULL){
+		/*if(pipe1!=NULL){
 			printf("hello");
 			close(my_pipe[0]);   /*Closes read side of pipe*/
-			close(1);       //STDOUT closed
-			dup2(my_pipe[1],1);
+			//close(1);       //STDOUT closed
+			//dup2(my_pipe[1],1);
 					//args[0] = pipe1[0];
 					//printf("%s\n", pipe1[0]);
-			execvp(pipe1[0], pipe1);
+			//execvp(pipe1[0], pipe1);
 					
-		}
-			printf("LLLL");
+		//}*/
+			//printf("LLLL");
 				//executes given command
 		if(execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
@@ -75,13 +75,13 @@ int process(char** args){
 		
 
     	} else {
-		if(pipe2!=NULL){
+		/*if(pipe2!=NULL){
 			wait(&rc);        //waits till the child send output to pipe
        			close(my_pipe[1]);
         		close(0);       //stdin closed
         		dup2(my_pipe[0],0);
         		execvp(pipe2[0],pipe2);
-		}
+		}*/
 		
 		// parent process
 		if(!bg ) {
