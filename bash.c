@@ -9,20 +9,29 @@
 
 char* input_file;
 char* output_file;
-char** pipe1;
-char** pipe2;
-char is_pipe;
+//char** pipe1;
+//char** pipe2;
+//char is_pipe;
 int num_of_words;
 char bg;
 
 int process(char** args){
 	//checks if the argument has a '&'
+<<<<<<< HEAD
 	//background(args);
 	/*int my_pipe[2];
 	if(pipe1!=NULL){
 		//int my_pipe[2];
 		pipe(my_pipe);	
 	}*/
+=======
+	background(args);
+	//int my_pipe[2];
+	//if(pipe1!=NULL){
+		//int my_pipe[2];
+	//	pipe(my_pipe);	
+	//}
+>>>>>>> 5d62ea7b5f079068801528c059d2c366b43c5f4f
     	int rc = fork();
 	int status;
     	if (rc < 0) {
@@ -33,6 +42,7 @@ int process(char** args){
 	else if (rc == 0) {// child process
 		
 		 // redirection of input
+		 // open stdin
 		 if (input_file != NULL) {
 		        int fd = open(input_file, O_RDONLY);
 
@@ -42,9 +52,15 @@ int process(char** args){
 
 		        close(fd);
 		 }
+<<<<<<< HEAD
 		
 		 // redirection of output
 		if (output_file != NULL) {
+=======
+
+		 // open stdout
+		 if (output_file != NULL) {
+>>>>>>> 5d62ea7b5f079068801528c059d2c366b43c5f4f
 		        int fd2;
 
 		        if ((fd2 = open(output_file, O_WRONLY | O_CREAT, 0644)) < 0) {
@@ -54,6 +70,7 @@ int process(char** args){
 		        dup2(fd2, STDOUT_FILENO);
 		        close(fd2);
 		    }	
+<<<<<<< HEAD
 		/*if(pipe1!=NULL){
 			printf("hello");
 			close(my_pipe[0]);   /*Closes read side of pipe*/
@@ -65,6 +82,19 @@ int process(char** args){
 					
 		//}*/
 			//printf("LLLL");
+=======
+		//if(pipe1!=NULL){
+		//	printf("hello");
+		//	close(my_pipe[0]);   /*Closes read side of pipe*/
+		//	close(1);       //STDOUT closed
+		//	dup2(my_pipe[1],1);
+					//args[0] = pipe1[0];
+					//printf("%s\n", pipe1[0]);
+		//	execvp(pipe1[0], pipe1);
+					
+		//}
+			printf("LLLL");
+>>>>>>> 5d62ea7b5f079068801528c059d2c366b43c5f4f
 				//executes given command
 		if(execvp(args[0], args) == -1) {
 			printf("%s: Command not Found\n", args[0]);
@@ -75,6 +105,7 @@ int process(char** args){
 		
 
     	} else {
+<<<<<<< HEAD
 		/*if(pipe2!=NULL){
 			wait(&rc);        //waits till the child send output to pipe
        			close(my_pipe[1]);
@@ -82,6 +113,15 @@ int process(char** args){
         		dup2(my_pipe[0],0);
         		execvp(pipe2[0],pipe2);
 		}*/
+=======
+		//if(pipe2!=NULL){
+		//	wait(&rc);        //waits till the child send output to pipe
+       		//	close(my_pipe[1]);
+        	//	close(0);       //stdin closed
+        	//	dup2(my_pipe[0],0);
+        	//	execvp(pipe2[0],pipe2);
+		//}
+>>>>>>> 5d62ea7b5f079068801528c059d2c366b43c5f4f
 		
 		// parent process
 		if(!bg ) {
@@ -191,7 +231,7 @@ char** read_input(){
 	return copy;
 
 }
-
+/*
 void check_for_pipe(char** args){
 
 	int  counter =0;
@@ -207,6 +247,7 @@ void check_for_pipe(char** args){
   }
 	
 }
+
 void seperateCommands(char ** args, int pointer){
 	//char** tokens = (char **)malloc((sizeof(char *))*(count_words(str)+1));
 	pipe1 = (char **)malloc((sizeof(char *))*(pointer+1));
@@ -222,7 +263,7 @@ void seperateCommands(char ** args, int pointer){
 		//printf("@pointer = %d %s\n",pointer, pipe2[count]);
 		count++;
 	}
-}
+}*/
 int chooseCommand(char** args){
 	//built in commands
 	char *commands[] = {"cd","exit"};

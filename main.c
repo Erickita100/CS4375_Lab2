@@ -1,4 +1,3 @@
-
 #include "bash.h"
 #include <stdlib.h>
 
@@ -18,8 +17,8 @@ int main(){
 		exited = chooseCommand(input);
 		}*/
 		exited = chooseCommand(input);
+
 		free(input);
 	  } while (exited);
 return 1;
 }
-
