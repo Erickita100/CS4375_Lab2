@@ -1,4 +1,3 @@
-
 #include "bash.h"
 #include <stdlib.h>
 
@@ -14,11 +13,10 @@ int main(){
 	    	printPrompt();
 		input =read_input();
 		if(input!=NULL){
-		check_for_pipe(input);
-		exited = chooseCommand(input);
+		//check_for_pipe(input);
+			exited = chooseCommand(input);
 		}
 		free(input);
 	  } while (exited);
 return 1;
 }
-
